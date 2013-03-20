@@ -1,6 +1,6 @@
 Minetest mod "Landscape"
 =======================
-version: 0.1
+version: 0.1 BETA
 
 License of source code and textures:
 ------------------------------------
