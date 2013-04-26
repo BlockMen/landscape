@@ -12,13 +12,13 @@ minetest.register_node("landscape:full_grass_block", {
 })
 
 local function get_type(pos)  --1 for left, 2 for right, 3 for behind, 4 for front
-	if minetest.env:get_node({x=pos.x+1, y=pos.y, z=pos.z}).name == "air" then
+	if minetest.registered_nodes[minetest.env:get_node({x=pos.x+1, y=pos.y, z=pos.z}).name].walkable == false then
 		return 1
-	elseif minetest.env:get_node({x=pos.x-1, y=pos.y, z=pos.z}).name == "air" then
+	elseif minetest.registered_nodes[minetest.env:get_node({x=pos.x-1, y=pos.y, z=pos.z}).name].walkable == false then
 		return 2
-	elseif minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z+1}).name == "air" then
+	elseif minetest.registered_nodes[minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z+1}).name].walkable == false then
 		return 3
-	elseif minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z-1}).name == "air" then
+	elseif minetest.registered_nodes[minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z-1}).name].walkable == false then
 		return 4
 	else
 		return 0
@@ -30,7 +30,10 @@ local function is_edge(pos)
 	local l2 = {x=pos.x, y=pos.y, z=pos.z-1}
 	local r1 = {x=pos.x+1, y=pos.y, z=pos.z}
 	local r2 = {x=pos.x, y=pos.y, z=pos.z+1}
-	if minetest.env:get_node(l1).name == "air" or minetest.env:get_node(l2).name == "air" or minetest.env:get_node(r1).name == "air" or minetest.env:get_node(r2).name == "air" then
+	if minetest.registered_nodes[minetest.env:get_node(l1).name].walkable == false or
+	minetest.registered_nodes[minetest.env:get_node(l2).name].walkable == false or
+	minetest.registered_nodes[minetest.env:get_node(r1).name].walkable == false or
+	minetest.registered_nodes[minetest.env:get_node(r2).name].walkable == false then
 		return true
 	end
 	
@@ -49,7 +52,7 @@ if remove_full_grass == false then
 	minetest.register_abm({
 		nodenames = {"default:dirt_with_grass"},
 		--neighbors = {"default:dirt_with_grass", "landscape:full_grass_block"},
-		interval = 1.0,
+		interval = 1,
 		chance = 1,
 		action = function(pos, node, active_object_count, active_object_count_wider)
 			local under = {x=pos.x, y=pos.y-1, z=pos.z}
@@ -58,7 +61,7 @@ if remove_full_grass == false then
 			local under_front2 = {x=pos.x, y=pos.y-1, z=pos.z+1}
 			local under_back = {x=pos.x-1, y=pos.y-1, z=pos.z}
 			local under_back2 = {x=pos.x, y=pos.y-1, z=pos.z-1}
-			if minetest.env:get_node(above).name == "air" then
+			if minetest.registered_nodes[minetest.env:get_node(above).name].walkable == false then
 			if get_type(pos) ~= 0 then
 				local typ = get_type(pos)
 				local ok = false
@@ -95,13 +98,12 @@ if remove_full_grass == false then
 		interval = 2.0,
 		chance = 20,
 		action = function(pos, node, active_object_count, active_object_count_wider)
-				if minetest.env:get_node({x=pos.x, y=pos.y+1, z=pos.z}).name ~= "air" then
-					local tmp_node3 = {name="default:dirt"}
-					minetest.env:set_node(pos, tmp_node3)
-				end
+		if minetest.registered_nodes[minetest.env:get_node({x=pos.x, y=pos.y+1, z=pos.z}).name].walkable == true then
+			local tmp_node3 = {name="default:dirt"}
+			minetest.env:set_node(pos, tmp_node3)
 		end
+	end
 	})
-
 else
 	minetest.register_abm({
 		nodenames = {"landscape:full_grass_block"},
