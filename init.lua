@@ -36,7 +36,7 @@ local function is_edge(pos)
 	minetest.registered_nodes[minetest.env:get_node(r2).name].walkable == false then
 		return true
 	end
-	
+
 end
 
 local function check(pos)
@@ -61,7 +61,9 @@ if remove_full_grass == false then
 			local under_front2 = {x=pos.x, y=pos.y-1, z=pos.z+1}
 			local under_back = {x=pos.x-1, y=pos.y-1, z=pos.z}
 			local under_back2 = {x=pos.x, y=pos.y-1, z=pos.z-1}
-			if minetest.registered_nodes[minetest.env:get_node(above).name].walkable == false then
+			local n = minetest.env:get_node(above).name
+			if n == nil then return end
+			if not minetest.registered_nodes[n.name].walkable then
 			if get_type(pos) ~= 0 then
 				local typ = get_type(pos)
 				local ok = false
@@ -88,7 +90,7 @@ if remove_full_grass == false then
 				end
 			end
 			end
-			
+
 		end
 	})
 
@@ -98,7 +100,9 @@ if remove_full_grass == false then
 		interval = 2.0,
 		chance = 20,
 		action = function(pos, node, active_object_count, active_object_count_wider)
-		if minetest.registered_nodes[minetest.env:get_node({x=pos.x, y=pos.y+1, z=pos.z}).name].walkable == true then
+		local n = minetest.env:get_node({x=pos.x, y=pos.y+1, z=pos.z}).name
+		if n == nil then return end
+		if minetest.registered_nodes[n].walkable == true then
 			local tmp_node3 = {name="default:dirt"}
 			minetest.env:set_node(pos, tmp_node3)
 		end
