@@ -11,12 +11,17 @@ minetest.register_node("landscape:full_grass_block", {
 	}),
 })
 
+function check_reg(set, key)
+    return set[key] ~= nil
+end
+
 local function get_type(pos)  --1 for left, 2 for right, 3 for behind, 4 for front
 	local l1 = minetest.env:get_node({x=pos.x+1, y=pos.y, z=pos.z}).name
 	local l2 = minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z+1}).name
 	local r1 = minetest.env:get_node({x=pos.x-1, y=pos.y, z=pos.z}).name
 	local r2 = minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z-1}).name
 	if l1 == nil or l2 == nil or r1 == nil or r2 == nil then return end
+	if not check_reg(minetest.registered_nodes, l1) or not check_reg(minetest.registered_nodes, r1) or not check_reg(minetest.registered_nodes, l2) or not check_reg(minetest.registered_nodes, r2) then return end
 	if l1 == "air" or not minetest.registered_nodes[l1].walkable then
 		return 1
 	elseif r1 == "air" or not minetest.registered_nodes[r1].walkable then
@@ -36,6 +41,7 @@ local function is_edge(pos)
 	local r1 = minetest.env:get_node({x=pos.x+1, y=pos.y, z=pos.z}).name
 	local r2 = minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z+1}).name
 	if l1 == nil or l2 == nil or r1 == nil or r2 == nil then return end
+	if not check_reg(minetest.registered_nodes, l1) or not check_reg(minetest.registered_nodes, r1) or not check_reg(minetest.registered_nodes, l2) or not check_reg(minetest.registered_nodes, r2) then return end
 	if l1 == "air" or not minetest.registered_nodes[l1] or
 	l2 == "air" or not minetest.registered_nodes[l2].walkable or
 	l3 == "air" or not minetest.registered_nodes[r1].walkable or
@@ -69,6 +75,7 @@ if remove_full_grass == false then
 			local under_back2 = {x=pos.x, y=pos.y-1, z=pos.z-1}
 			local n = minetest.env:get_node(above).name
 			if n == nil then return end
+			if not check_reg(minetest.registered_nodes, n) then return end
 			if n == "air" or not minetest.registered_nodes[n].walkable then
 			if get_type(pos) ~= 0 then
 				local typ = get_type(pos)
@@ -106,6 +113,7 @@ if remove_full_grass == false then
 		action = function(pos, node, active_object_count, active_object_count_wider)
 		local n = minetest.env:get_node({x=pos.x, y=pos.y+1, z=pos.z}).name
 		if n == nil then return end
+		if not check_reg(minetest.registered_nodes, n) then return end
 		if n ~= "air" or minetest.registered_nodes[n].walkable then
 			minetest.env:set_node(pos, {name="default:dirt"})
 		end
