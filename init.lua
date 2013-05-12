@@ -4,7 +4,7 @@ minetest.register_node("landscape:full_grass_block", {
 	description = "Dirt with Grass",
 	tiles = {"default_grass.png"},
 	is_ground_content = true,
-	groups = {crumbly=3},
+	groups = {crumbly=3, not_in_creative=1},
 	drop = 'default:dirt',
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name="default_grass_footstep", gain=0.4},
@@ -12,13 +12,17 @@ minetest.register_node("landscape:full_grass_block", {
 })
 
 local function get_type(pos)  --1 for left, 2 for right, 3 for behind, 4 for front
-	if minetest.registered_nodes[minetest.env:get_node({x=pos.x+1, y=pos.y, z=pos.z}).name].walkable == false then
+	local l1 = minetest.env:get_node({x=pos.x+1, y=pos.y, z=pos.z}).name
+	local l2 = minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z+1}).name
+	local r1 = minetest.env:get_node({x=pos.x-1, y=pos.y, z=pos.z}).name
+	local r2 = minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z-1}).name
+	if l1 == "air" or not minetest.registered_nodes[l1].walkable then
 		return 1
-	elseif minetest.registered_nodes[minetest.env:get_node({x=pos.x-1, y=pos.y, z=pos.z}).name].walkable == false then
+	elseif r1 == "air" or not minetest.registered_nodes[r1].walkable then
 		return 2
-	elseif minetest.registered_nodes[minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z+1}).name].walkable == false then
+	elseif l2 == "air" or not minetest.registered_nodes[l2].walkable then
 		return 3
-	elseif minetest.registered_nodes[minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z-1}).name].walkable == false then
+	elseif r2 == "air" or not minetest.registered_nodes[r2].walkable then
 		return 4
 	else
 		return 0
@@ -80,12 +84,10 @@ if remove_full_grass == false then
 					if minetest.env:get_node(under).name == "default:dirt" then 
 						if not is_edge(under) then
 					--IF GRAS UNTEN-DAVOR tthen....
-							local tmp_node3 = {name="landscape:full_grass_block"}
-							minetest.env:set_node(pos, tmp_node3)	
+							minetest.env:set_node(pos, {name="landscape:full_grass_block"})	
 						end
 					else
-						local tmp_node3 = {name="landscape:full_grass_block"}
-						minetest.env:set_node(pos, tmp_node3)
+						minetest.env:set_node(pos, {name="landscape:full_grass_block"})
 					end
 				end
 			end
@@ -102,9 +104,8 @@ if remove_full_grass == false then
 		action = function(pos, node, active_object_count, active_object_count_wider)
 		local n = minetest.env:get_node({x=pos.x, y=pos.y+1, z=pos.z}).name
 		if n == nil then return end
-		if n ~= "air" or minetest.registered_nodes[n].walkable == true then
-			local tmp_node3 = {name="default:dirt"}
-			minetest.env:set_node(pos, tmp_node3)
+		if n ~= "air" or minetest.registered_nodes[n].walkable then
+			minetest.env:set_node(pos, {name="default:dirt"})
 		end
 	end
 	})
