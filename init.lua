@@ -16,6 +16,7 @@ local function get_type(pos)  --1 for left, 2 for right, 3 for behind, 4 for fro
 	local l2 = minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z+1}).name
 	local r1 = minetest.env:get_node({x=pos.x-1, y=pos.y, z=pos.z}).name
 	local r2 = minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z-1}).name
+	if l1 == nil or l2 == nil or r1 == nil or r2 == nil then return end
 	if l1 == "air" or not minetest.registered_nodes[l1].walkable then
 		return 1
 	elseif r1 == "air" or not minetest.registered_nodes[r1].walkable then
@@ -34,6 +35,7 @@ local function is_edge(pos)
 	local l2 = minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z-1}).name
 	local r1 = minetest.env:get_node({x=pos.x+1, y=pos.y, z=pos.z}).name
 	local r2 = minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z+1}).name
+	if l1 == nil or l2 == nil or r1 == nil or r2 == nil then return end
 	if l1 == "air" or not minetest.registered_nodes[l1] or
 	l2 == "air" or not minetest.registered_nodes[l2].walkable or
 	l3 == "air" or not minetest.registered_nodes[r1].walkable or
