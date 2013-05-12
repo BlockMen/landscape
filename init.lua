@@ -26,14 +26,14 @@ local function get_type(pos)  --1 for left, 2 for right, 3 for behind, 4 for fro
 end
 
 local function is_edge(pos)
-	local l1 = {x=pos.x-1, y=pos.y, z=pos.z}
-	local l2 = {x=pos.x, y=pos.y, z=pos.z-1}
-	local r1 = {x=pos.x+1, y=pos.y, z=pos.z}
-	local r2 = {x=pos.x, y=pos.y, z=pos.z+1}
-	if minetest.registered_nodes[minetest.env:get_node(l1).name].walkable == false or
-	minetest.registered_nodes[minetest.env:get_node(l2).name].walkable == false or
-	minetest.registered_nodes[minetest.env:get_node(r1).name].walkable == false or
-	minetest.registered_nodes[minetest.env:get_node(r2).name].walkable == false then
+	local l1 = minetest.env:get_node({x=pos.x-1, y=pos.y, z=pos.z}).name
+	local l2 = minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z-1}).name
+	local r1 = minetest.env:get_node({x=pos.x+1, y=pos.y, z=pos.z}).name
+	local r2 = minetest.env:get_node({x=pos.x, y=pos.y, z=pos.z+1}).name
+	if l1 == "air" or not minetest.registered_nodes[l1] or
+	l2 == "air" or not minetest.registered_nodes[l2].walkable or
+	l3 == "air" or not minetest.registered_nodes[r1].walkable or
+	l4 == "air" or not minetest.registered_nodes[r2].walkable then
 		return true
 	end
 
@@ -63,7 +63,7 @@ if remove_full_grass == false then
 			local under_back2 = {x=pos.x, y=pos.y-1, z=pos.z-1}
 			local n = minetest.env:get_node(above).name
 			if n == nil then return end
-			if not minetest.registered_nodes[n.name].walkable then
+			if n == "air" or not minetest.registered_nodes[n].walkable then
 			if get_type(pos) ~= 0 then
 				local typ = get_type(pos)
 				local ok = false
@@ -102,7 +102,7 @@ if remove_full_grass == false then
 		action = function(pos, node, active_object_count, active_object_count_wider)
 		local n = minetest.env:get_node({x=pos.x, y=pos.y+1, z=pos.z}).name
 		if n == nil then return end
-		if minetest.registered_nodes[n].walkable == true then
+		if n ~= "air" or minetest.registered_nodes[n].walkable == true then
 			local tmp_node3 = {name="default:dirt"}
 			minetest.env:set_node(pos, tmp_node3)
 		end
